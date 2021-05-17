@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using TreeApp.Core;
 using TreeApp.Models;
 
 namespace TreeApp.Controllers
@@ -12,10 +13,12 @@ namespace TreeApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly DBCoreContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, DBCoreContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
