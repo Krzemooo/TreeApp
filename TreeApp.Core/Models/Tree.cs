@@ -9,8 +9,10 @@ namespace TreeApp.Core.Models
     {
         [Key]
         public int ID { get; set; }
-        public Item Item { get; set; }
+        public string ItemValue { get; set; }
         public int ItemLevel { get; set; }
-        public int? ItemParent { get; set; }
+        public int ItemPosition { get; set; }
+        public Guid UniqItemID { get; set; }
+        public Guid? ParentUniqID { get; set; }
     }
 }

@@ -21,6 +21,15 @@ namespace TreeApp.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<JsonResult> GetTreeItems()
+        {
+            TreeCore treeCore = new TreeCore(_context);
+            List<Core.Models.Tree> _allTree = await treeCore.GetAllTreeAsync();
+
+            return Json(_allTree);
+        }
+
         public IActionResult Index()
         {
             return View();

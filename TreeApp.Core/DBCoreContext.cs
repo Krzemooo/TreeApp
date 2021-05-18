@@ -13,7 +13,6 @@ namespace TreeApp.Core
 
         }
 
-        public DbSet<Item> Item { get; set; }
         public DbSet<Tree> Tree { get; set; }
     }
 }

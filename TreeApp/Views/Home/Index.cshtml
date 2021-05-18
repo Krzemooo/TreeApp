@@ -2,75 +2,77 @@
     ViewData["Title"] = "Home Page";
 }
 
-<menu id="ctxMenu">
-        <menu title="Add"></menu>
-        <menu title="Edit"></menu>
-        <menu title="Remove"></menu>
-</menu>
-
 <div class="row">
     <div class="text-center">
         <h1 class="title">Tree View</h1>
     </div>
 </div>
-<div class="row">
-    <button class="btn btn-success">Add</button>
-    <button class="btn btn-warning">Edit</button>
-    <button class="btn btn-danger">Remove</button>
-</div>
 <div class="row" id="treeRow">
-    <ul class="tree-view">
-        <li>
-            <span id="1lvl" class="caret">1</span>
-            <ul class="nested">
-                <li>1.1</li>
-                <li>1.2</li>
-                <li class="branch">
-                    <span class="caret">1.3</span>
-                    <ul class="nested">
-                        <li>1.3.1</li>
-                        <li>1.3.2</li>
-                        <li class="branch">
-                            <span class="caret">1.3.3</span>
-                            <ul class="nested">
-                                <li>1.3.3.1</li>
-                                <li>1.3.3.2</li>
-                                <li>1.3.3.3</li>
-                                <li>1.3.3.4</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
+    <ul class="tree-view" id="mainTree">
+
     </ul>
 </div>
 
 
 <script>
-    var toggler = document.getElementsByClassName("caret");
-    var i;
+    var allItemInTree;
 
-    for (i = 0; i < toggler.length; i++) {
-        toggler[i].addEventListener("click", function () {
-            this.parentElement.querySelector(".nested").classList.toggle("active");
-            this.classList.toggle("caret-down");
-        });
-    }
+    $.ajax({
+        type: 'GET',
+        url: '/Home/GetTreeItems',
+        async: true,
+        dataType: "json",
+        success: function (response) {
+            allItemInTree = response;
+            var maxLevel = Math.max.apply(Math, allItemInTree.map(function (m) { return m.itemLevel; }))
 
-    var notepad = document.getElementById("1lvl");
-    var treeRow = document.getElementsByClassName("container");
-    notepad.addEventListener("contextmenu", function (event) {
-        event.preventDefault();
-        var ctxMenu = document.getElementById("ctxMenu");
-        ctxMenu.style.display = "block";
-        ctxMenu.style.left = (event.pageX - 10) + "px";
-        ctxMenu.style.top = (event.pageY - 10) + "px";
-    }, false);
-    treeRow.addEventListener("click", function (event) {
-        var ctxMenu = document.getElementById("ctxMenu");
-        ctxMenu.style.display = "";
-        ctxMenu.style.left = "";
-        ctxMenu.style.top = "";
-    }, false);
+            var i;
+            for (i = 0; i <= maxLevel; i++) {
+                var listOfItem = allItemInTree.filter(res => res.itemLevel == i)
+
+                listOfItem.forEach((item) => {
+                    if (i == 0) {
+                        document.getElementById('mainTree').innerHTML += ('<li class="branch" id=' + item.uniqItemID + '><span class="caret">' + item.itemValue + '</span><button class="btn btn-link btnAdd" data-id=' + item.uniqItemID + '>Add</button><button class="btn btn-link btnEdit">Edit</button><button class="btn btn-link btnRemove">Remove</button><ul class="nested"></ul></li>');
+                    } else {
+                        if (document.getElementById(item.parentUniqID).getElementsByTagName("ul")[0].innerHTML !== undefined) {
+                            document.getElementById(item.parentUniqID).getElementsByTagName("ul")[0].innerHTML += ('<li class="branch" id=' + item.uniqItemID + '><span class="caret">' + item.itemValue + '</span><button class="btn btn-link btnAdd" data-id=' + item.uniqItemID + '>Add</button><button class="btn btn-link btnEdit">Edit</button><button class="btn btn-link btnRemove">Remove</button><ul class="nested"></ul></li>');
+                        } else {
+                            document.getElementById(item.parentUniqID).getElementsByTagName("ul")[0].innerHTML = ('<li class="branch" id=' + item.uniqItemID + '><span class="caret">' + item.itemValue + '</span><button class="btn btn-link btnAdd" data-id=' + item.uniqItemID + '>Add</button><button class="btn btn-link btnEdit">Edit</button><button class="btn btn-link btnRemove">Remove</button><ul class="nested"></ul></li>');
+                        }
+                    }
+                });
+
+
+
+            }
+
+
+            var toggler = document.getElementsByClassName("caret");
+            var i;
+
+            for (i = 0; i < toggler.length; i++) {
+                toggler[i].addEventListener("click", function () {
+                    this.parentElement.querySelector(".nested").classList.toggle("active");
+                    this.classList.toggle("caret-down");
+                });
+            }
+        },
+        error: function (request, status, error) {
+            alert(request.responseText);
+        }
+    });
+
+    $(document).on('click', '.btnAdd', function () {
+        debugger;
+        var uniqID = $(this).data("id");
+
+        if (document.getElementById(uniqID).getElementsByTagName("ul")[0].innerHTML !== undefined) {
+            document.getElementById(uniqID).getElementsByTagName("ul")[0].innerHTML += ('<li class="branch"><span class="caret">test</span><button class="btn btn-link btnAdd">Add</button><button class="btn btn-link btnEdit">Edit</button><button class="btn btn-link btnRemove">Remove</button><ul class="nested"></ul></li>');
+        } else {
+            document.getElementById(uniqID).getElementsByTagName("ul")[0].innerHTML = ('<li class="branch" ><span class="caret">test</span><button class="btn btn-link btnAdd">Add</button><button class="btn btn-link btnEdit">Edit</button><button class="btn btn-link btnRemove">Remove</button><ul class="nested"></ul></li>');
+        }
+    });
+
+
+    
 </script>
